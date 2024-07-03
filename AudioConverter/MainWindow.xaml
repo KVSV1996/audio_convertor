@@ -1,0 +1,14 @@
+﻿<Window x:Class="AudioConverter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Audio Converter" Height="250" Width="400"
+        AllowDrop="True"
+        DragOver="Window_DragOver"
+        Drop="Window_Drop">
+    <Grid>
+        <Button x:Name="SelectFileButton" Content="Select File" HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Width="120" Click="SelectFileButton_Click"/>
+        <TextBox x:Name="NewFileNameTextBox" HorizontalAlignment="Left" Margin="30,70,0,0" VerticalAlignment="Top" Width="320" Text="Enter new file name" GotFocus="RemoveText" LostFocus="AddText"/>
+        <Button x:Name="ConvertButton" Content="Convert" HorizontalAlignment="Right" Margin="0,110,30,0" VerticalAlignment="Top" Width="120" Click="ConvertButton_Click"/>
+        <Label x:Name="StatusLabel" Content="" HorizontalAlignment="Center" Margin="0,150,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
