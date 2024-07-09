@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AudioConverterMaui.MainPage"
+             Title="Audio Converter">
+    <VerticalStackLayout>
+        <Button x:Name="SelectFileButton" Text="Select File" HorizontalOptions="Center" Margin="0,31,0,0" VerticalOptions="Start" WidthRequest="120" Clicked="SelectFileButton_Click"/>
+        <Button x:Name="SelectFolderButton" Text="Select Folder" HorizontalOptions="Center" Margin="0,73,0,0" VerticalOptions="Start" WidthRequest="120" Clicked="SelectFolderButton_Click"/>
+        <!--<CheckBox x:Name="RenameCheckBox" Text="Rename Files in folder" HorizontalOptions="Start" Margin="30,73,0,0" VerticalOptions="Start"/>-->
+        <Button x:Name="ConvertButton" Text="Convert" HorizontalOptions="Center" Margin="0,176,0,0" VerticalOptions="Start" WidthRequest="120" Clicked="ConvertButton_Click"/>
+        <Label x:Name="StatusLabel" Text="" HorizontalOptions="Center" Margin="0,150,0,0" VerticalOptions="Start"/>
+    </VerticalStackLayout>
+</ContentPage>

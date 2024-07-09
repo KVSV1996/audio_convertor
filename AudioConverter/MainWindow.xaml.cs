@@ -4,7 +4,6 @@ using System.Windows;
 using System.IO;
 using NAudio.Vorbis;
 using Ookii.Dialogs.Wpf;
-using System.Diagnostics;
 
 namespace AudioConverter
 {
@@ -53,7 +52,7 @@ namespace AudioConverter
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     string outputFilePath = saveFileDialog.FileName;
-                    ConvertFileWithFFmpeg(inputFilePath, outputFilePath);
+                    ConvertFile(inputFilePath, outputFilePath);
                 }
             }
             else if (!string.IsNullOrEmpty(inputFolderPath))
@@ -85,7 +84,7 @@ namespace AudioConverter
             foreach (var file in files)
             {
                 string outputFilePath = Path.Combine(outputFolderPath, Path.GetFileNameWithoutExtension(file) + ".wav");
-                ConvertFileWithFFmpeg(file, outputFilePath);
+                ConvertFile(file, outputFilePath);
             }
         }
 
@@ -113,38 +112,6 @@ namespace AudioConverter
                     StatusLabel.Content = "Conversion Completed: " + Path.GetFileName(outputFilePath);
                     MessageBox.Show("Conversion Completed!");
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error converting file: " + inputFilePath + "\n" + ex.Message);
-            }
-        }
-
-        private void ConvertFileWithFFmpeg(string inputFilePath, string outputFilePath)
-        {
-            try
-            {
-                string ffmpegPath = @"path\to\ffmpeg.exe"; // Убедитесь, что путь к ffmpeg.exe корректен
-                string arguments = $"-i \"{inputFilePath}\" -ar 8000 -ac 1 \"{outputFilePath}\"";
-
-                ProcessStartInfo processStartInfo = new ProcessStartInfo
-                {
-                    FileName = ffmpegPath,
-                    Arguments = arguments,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                using (Process process = new Process())
-                {
-                    process.StartInfo = processStartInfo;
-                    process.Start();
-                    process.WaitForExit();
-                }
-
-                StatusLabel.Content = "Conversion Completed: " + Path.GetFileName(outputFilePath);
-                MessageBox.Show("Conversion Completed!");
             }
             catch (Exception ex)
             {
