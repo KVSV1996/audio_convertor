@@ -2,8 +2,12 @@
 using NAudio.Wave;
 using System.Windows;
 using System.IO;
-using NAudio.Vorbis;
 using Ookii.Dialogs.Wpf;
+using Concentus.Structs;
+using System;
+using NVorbis;
+using Concentus.Oggfile;
+using NAudio.Vorbis;
 
 namespace AudioConverter
 {
@@ -123,34 +127,66 @@ namespace AudioConverter
         {
             string extension = Path.GetExtension(inputFilePath).ToLower();
 
-            switch (extension)
+            try
             {
-                case ".mp3":
-                case ".wma":
-                case ".aac":
-                case ".flac":
-                case ".m4a":
-                    return new MediaFoundationReader(inputFilePath);
-                case ".wav":
-                    return new WaveFileReader(inputFilePath);
-                case ".ogg":
-                    return new VorbisWaveReader(inputFilePath);
-                default:
-                    return null;
+                switch (extension)
+                {
+                    case ".mp3":
+                    case ".wma":
+                    case ".aac":
+                    case ".flac":
+                    case ".m4a":
+                        return new MediaFoundationReader(inputFilePath);
+                    case ".wav":
+                        return new WaveFileReader(inputFilePath);
+                    case ".ogg":
+                        return CreateOpusReader(inputFilePath) ?? (WaveStream)new VorbisWaveReader(inputFilePath);
+                    default:
+                        return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error initializing audio reader: " + ex.Message);
+                return null;
             }
         }
 
-        private void ConvertAllFilesInDirectory(string directoryPath)
+        private WaveStream CreateOpusReader(string inputFilePath)
         {
-            var supportedExtensions = new[] { ".mp3", ".m4a", ".ogg", ".wav", ".wma", ".aac", ".flac" };
-            var files = Directory.GetFiles(directoryPath)
-                                 .Where(file => supportedExtensions.Contains(Path.GetExtension(file).ToLower()))
-                                 .ToArray();
-
-            foreach (var file in files)
+            try
             {
-                string outputFilePath = Path.Combine(directoryPath, Path.GetFileNameWithoutExtension(file) + ".wav");
-                ConvertFile(file, outputFilePath);
+                var inputStream = File.OpenRead(inputFilePath);
+                var opusDecoder = new OpusDecoder(48000, 2); // Заменено
+                int sampleRate = 48000; // Стандартная частота для Opus
+                int channels = 2; // Предполагаем стерео
+
+                var oggStream = new OpusOggReadStream(opusDecoder, inputStream);
+
+                // Создаем временный файл WAV
+                var tempWavFile = Path.GetTempFileName();
+
+                using (var waveFileWriter = new WaveFileWriter(tempWavFile, new WaveFormat(sampleRate, 16, channels)))
+                {
+                    while (oggStream.HasNextPacket)
+                    {
+                        short[] packetSamples = oggStream.DecodeNextPacket();
+                        if (packetSamples != null)
+                        {
+                            byte[] buffer = new byte[packetSamples.Length * sizeof(short)];
+                            Buffer.BlockCopy(packetSamples, 0, buffer, 0, buffer.Length);
+                            waveFileWriter.Write(buffer, 0, buffer.Length);
+                        }
+                    }
+                }
+
+                // Читаем временный файл WAV
+                return new WaveFileReader(tempWavFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error decoding Opus file: " + ex.Message);
+                return null;
             }
         }
 
