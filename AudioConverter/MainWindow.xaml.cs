@@ -138,7 +138,15 @@ namespace AudioConverter
                     case ".m4a":
                         return new MediaFoundationReader(inputFilePath);
                     case ".wav":
-                        return new WaveFileReader(inputFilePath);
+                        //return new WaveFileReader(inputFilePath);
+                        try
+                        {
+                            return new WaveFileReader(inputFilePath);
+                        }
+                        catch
+                        {
+                            return new MediaFoundationReader(inputFilePath);
+                        }
                     case ".ogg":
                         return CreateOpusReader(inputFilePath) ?? (WaveStream)new VorbisWaveReader(inputFilePath);
                     default:
